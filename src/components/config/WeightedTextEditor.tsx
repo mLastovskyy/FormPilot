@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus, X } from "lucide-react";
 import { InfoDot } from "@/components/ui/InfoDot";
+import { NumberField } from "@/components/ui/NumberField";
 import { useI18n } from "@/components/I18nProvider";
 import type { WeightedOption } from "@/lib/types";
 
@@ -83,15 +84,13 @@ export function WeightedTextEditor({ options, onChange }: Props) {
                 </span>
                 <label className="flex items-center gap-1.5 text-xs text-muted">
                   {d.card.weight}
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={String(opt.weight)}
-                    onChange={(e) => {
-                      const digits = e.target.value.replace(/\D/g, "");
-                      update(i, { weight: digits === "" ? 0 : Math.min(999, parseInt(digits, 10)) });
-                    }}
-                    className="h-8 w-16 rounded-lg border border-line bg-surface px-2 text-center text-sm tabular-nums focus-ring"
+                  <NumberField
+                    value={opt.weight}
+                    min={0}
+                    max={999}
+                    emptyValue={0}
+                    onCommit={(n) => update(i, { weight: n })}
+                    className="h-8 w-16 rounded-lg px-2 text-center text-sm"
                   />
                 </label>
                 <button

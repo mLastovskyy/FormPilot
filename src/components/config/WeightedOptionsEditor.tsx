@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Switch } from "@/components/ui/Switch";
 import { InfoDot } from "@/components/ui/InfoDot";
+import { NumberField } from "@/components/ui/NumberField";
 import { useI18n } from "@/components/I18nProvider";
 import type { WeightedOption } from "@/lib/types";
 import { cn } from "@/lib/cn";
@@ -13,8 +14,7 @@ interface Props {
   showWeights?: boolean;
 }
 
-const fieldClass =
-  "h-8 w-16 rounded-lg border border-line bg-surface px-2 text-center text-sm tabular-nums focus-ring disabled:opacity-40";
+const fieldClass = "h-8 w-16 rounded-lg px-2 text-center text-sm";
 
 export function WeightedOptionsEditor({ options, onChange, showWeights = true }: Props) {
   const { d } = useI18n();
@@ -67,17 +67,13 @@ export function WeightedOptionsEditor({ options, onChange, showWeights = true }:
           {showWeights && (
             <label className="flex items-center gap-1.5 text-xs text-muted">
               <span className="hidden sm:inline">{d.card.weight}</span>
-              <input
-                type="text"
-                inputMode="numeric"
+              <NumberField
+                value={opt.weight}
+                min={0}
+                max={999}
+                emptyValue={0}
                 disabled={!opt.enabled}
-                value={String(opt.weight)}
-                onChange={(e) => {
-                  const digits = e.target.value.replace(/\D/g, "");
-                  update(i, {
-                    weight: digits === "" ? 0 : Math.min(999, parseInt(digits, 10)),
-                  });
-                }}
+                onCommit={(n) => update(i, { weight: n })}
                 className={fieldClass}
               />
             </label>

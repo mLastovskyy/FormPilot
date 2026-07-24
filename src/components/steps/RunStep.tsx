@@ -21,6 +21,7 @@ import type { ParsedForm, QuestionConfig, SampledAnswer } from "@/lib/types";
 import { describeConfigIssue, isChoiceType, sampleSubmission } from "@/lib/distribution";
 import { Button } from "@/components/ui/Button";
 import { InfoDot } from "@/components/ui/InfoDot";
+import { NumberField } from "@/components/ui/NumberField";
 import { DistributionBars } from "@/components/DistributionBars";
 import { useI18n } from "@/components/I18nProvider";
 
@@ -241,16 +242,14 @@ export function RunStep({
               <Hash className="h-4 w-4 text-muted" /> {d.run.submissions}
               <InfoDot content={d.glossary.count} />
             </span>
-            <input
-              type="text"
-              inputMode="numeric"
+            <NumberField
+              value={count}
+              min={1}
+              max={500}
+              emptyValue={1}
               disabled={phase === "running"}
-              value={String(count)}
-              onChange={(e) => {
-                const digits = e.target.value.replace(/\D/g, "");
-                onCountChange(digits === "" ? 1 : Math.max(1, Math.min(500, parseInt(digits, 10))));
-              }}
-              className="h-11 rounded-xl border border-line bg-surface px-3.5 text-sm focus-ring disabled:opacity-50"
+              onCommit={onCountChange}
+              className="h-11 rounded-xl px-3.5 text-sm"
             />
           </label>
           <label className="flex flex-col gap-1.5">
@@ -258,16 +257,14 @@ export function RunStep({
               <Timer className="h-4 w-4 text-muted" /> {d.run.delay}
               <InfoDot content={d.glossary.delay} />
             </span>
-            <input
-              type="text"
-              inputMode="numeric"
+            <NumberField
+              value={delayMs}
+              min={0}
+              max={5000}
+              emptyValue={0}
               disabled={phase === "running"}
-              value={String(delayMs)}
-              onChange={(e) => {
-                const digits = e.target.value.replace(/\D/g, "");
-                onDelayChange(digits === "" ? 0 : Math.min(5000, parseInt(digits, 10)));
-              }}
-              className="h-11 rounded-xl border border-line bg-surface px-3.5 text-sm focus-ring disabled:opacity-50"
+              onCommit={onDelayChange}
+              className="h-11 rounded-xl px-3.5 text-sm"
             />
           </label>
         </div>
@@ -304,10 +301,10 @@ export function RunStep({
         <AnimatePresence>
           {phase !== "idle" && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-6 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="mt-6"
             >
               <div className="mb-2 flex items-center justify-between text-sm">
                 {phase === "running" ? (

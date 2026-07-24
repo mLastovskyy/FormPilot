@@ -26,6 +26,7 @@ import type { Dict } from "@/lib/i18n";
 import { Switch } from "@/components/ui/Switch";
 import { Segmented } from "@/components/ui/Segmented";
 import { InfoDot } from "@/components/ui/InfoDot";
+import { NumberField } from "@/components/ui/NumberField";
 import { DistributionBars } from "@/components/DistributionBars";
 import { WeightedOptionsEditor } from "@/components/config/WeightedOptionsEditor";
 import { WeightedTextEditor } from "@/components/config/WeightedTextEditor";
@@ -328,8 +329,7 @@ function CheckboxRange({
   d: Dict;
 }) {
   const enabledCount = config.options.filter((o) => o.enabled).length;
-  const field =
-    "h-9 w-16 rounded-lg border border-line bg-surface px-2 text-center text-sm tabular-nums focus-ring";
+  const field = "h-9 w-16 rounded-lg px-2 text-center text-sm";
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-surface-2/40 px-3 py-2.5">
       <span className="flex items-center gap-1.5 text-xs font-medium">
@@ -338,35 +338,23 @@ function CheckboxRange({
       </span>
       <label className="flex items-center gap-1.5 text-xs text-muted">
         {d.card.min}
-        <input
-          type="text"
-          inputMode="numeric"
-          value={String(config.checkboxMin)}
-          onChange={(e) => {
-            const digits = e.target.value.replace(/\D/g, "");
-            onChange({
-              checkboxMin: clamp(digits === "" ? 0 : parseInt(digits, 10), 0, config.checkboxMax),
-            });
-          }}
+        <NumberField
+          value={config.checkboxMin}
+          min={0}
+          max={config.checkboxMax}
+          emptyValue={0}
+          onCommit={(n) => onChange({ checkboxMin: n })}
           className={field}
         />
       </label>
       <label className="flex items-center gap-1.5 text-xs text-muted">
         {d.card.max}
-        <input
-          type="text"
-          inputMode="numeric"
-          value={String(config.checkboxMax)}
-          onChange={(e) => {
-            const digits = e.target.value.replace(/\D/g, "");
-            onChange({
-              checkboxMax: clamp(
-                digits === "" ? 1 : parseInt(digits, 10),
-                config.checkboxMin,
-                enabledCount || 1,
-              ),
-            });
-          }}
+        <NumberField
+          value={config.checkboxMax}
+          min={config.checkboxMin}
+          max={Math.max(1, enabledCount)}
+          emptyValue={1}
+          onCommit={(n) => onChange({ checkboxMax: n })}
           className={field}
         />
       </label>
@@ -408,6 +396,3 @@ function GridEditor({
   );
 }
 
-function clamp(n: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, n));
-}
